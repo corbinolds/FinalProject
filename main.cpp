@@ -84,6 +84,8 @@ GLuint environmentDL;
 //CHANGE 2PM SHADERS
 GLuint shaderProgramHandle = 0;
 GLuint uniformTimeLoc = 0;
+GLuint shaderProgramHandle2 = 0;
+GLuint uniformTimeLoc2 = 0;
 GLuint uniformDressColorLoc = 0;
 
 
@@ -619,6 +621,13 @@ void setUpShaders() {
 
 	uniformTimeLoc = glGetUniformLocation(shaderProgramHandle, "time");
 	uniformDressColorLoc = glGetUniformLocation(shaderProgramHandle, "dressColor");
+
+    string thirdFile = "shaders/powerup.v.glsl";
+    string fourthFile = "shaders/powerup.f.glsl";
+
+    shaderProgramHandle2 = createShaderProgram((char *)thirdFile.c_str(), (char *)fourthFile.c_str());
+
+    uniformTimeLoc2 = glGetUniformLocation(shaderProgramHandle2, "time");
 }
 //END OF CHANGE 2PM
 
@@ -1201,7 +1210,6 @@ void renderScene(void) {
     }
 	if(carY < -50)
 	{
-		printf("THIS IS CALLED");
 		newGame(); 
 	}
 	GLfloat materialForEnemies[] = { 1,	0.829,	0.829 , 1.0f };
@@ -1279,7 +1287,7 @@ void renderScene(void) {
         }
     }
 	
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 
     // DRAW POWERUP
     if(!powerupAchieved) {
@@ -1294,6 +1302,10 @@ void renderScene(void) {
 		float lPosition[4] = { powerX, 1.0 + bob, powerZ, 1.0 };
 		glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
 
+        glUseProgram(shaderProgramHandle2);
+        float currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+        glUniform1f(uniformTimeLoc2, currentTime);
+
         glPushMatrix();
       //  glColor3f(1.0, (204.0/255.0), 0.0);
 		GLfloat materialColorPower[] = { 1.0, (204.0 / 255.0),  0.0, 1.0f };
@@ -1304,6 +1316,8 @@ void renderScene(void) {
         gluCylinder(powerup, 1.0, 1.0, 3.0, 16, 3);
        // glColor3f(1.0, 1.0, 1.0);
         glPopMatrix();
+
+        glUseProgram(0);
 
 		//glDisable(GL_LIGHTING);
     } 
