@@ -977,34 +977,6 @@ void generateEnvironmentDL() {
 
     environmentDL = glGenLists(1);
     glNewList(environmentDL, GL_COMPILE);
-	
-	float emerald[4] = { .17568, .61424, .07568, .6 };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, emerald);
-	//glEnable( GL_LIGHTING );
-    
-    // DRAW OUR TEAPOT
-    glPushMatrix(); {
-        // TODO #03: Make our teapot cool
-		float teapotColor[4] = { .15, .59, .15, .6 };  //makes it green
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, emerald);
-        glFrontFace( GL_CW );           // we are using back-face culling.  There is a bug with the GLUT Teapot that
-                                        // the vertices are specified in a clockwise order, so tell OpenGL to use
-                                        // a clockwise winding order to denote front faces.
-        glTranslatef( 0, 1, 0 );// translate our teapot above the ground
-        glutSolidTeapot( 2.0 );         // draw our teapot
-        glFrontFace( GL_CCW );          // make sure we set our winding order back to the default of counter-clockwise
-                                        // so future faces will be culled properly.
-    }; glPopMatrix();
-
-	/*test a light
-	glEnable(GL_LIGHT0);
-	float diffuseCol[4] = { .8,.008,.008,.010 };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseCol);
-	float ambientCol[4] = { 0.0, 0.0, 0.0, 1.0 };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientCol);
-	float lPosition[4] = { 0.0, 0, 0.0, 1.0 };          
-	glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
-	*/
 
 	glEnable(GL_LIGHT1);
 	float diffuseCol[4] = { 0.0,0.12,0.12,.30 };
