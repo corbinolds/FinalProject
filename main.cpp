@@ -119,6 +119,7 @@ float carHeading = 0;                           // heading in radians
 float speed = 0;                            // car speed
 float tires = 0.0;                          // tire angle in radians
 float freeFallAngle = 0.0;                  // falling angle
+float powerupAngle = 0.0;                   // make the powerup Spin
 float bob;
 int pulse = 50;                                  // changes the color of the aura around Crane
 int health = 100;
@@ -1094,6 +1095,8 @@ void renderScene(void) {
 	//float lPosition[4] = { 0.0, 10.0, 0.0, 1.0 };
 	//glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
 
+    Vector camDir = Vector(carX - cameraXYZ.getX(), carY - cameraXYZ.getY(), carZ - cameraXYZ.getZ());
+
     //Added for trees 
     view = Vector(-cameraXYZ.getX(), -cameraXYZ.getY(), -cameraXYZ.getZ())*-1.0;
 
@@ -1238,7 +1241,8 @@ void renderScene(void) {
         glPushMatrix();
         glColor3f(1.0, (204.0/255.0), 0.0);
         glTranslatef(powerX, 1.0 + bob, powerZ);
-        glRotatef(90.0, 1.0, 0.0, 0.0);
+        glRotatef(powerupAngle, 0.0, 1.0, 0.0);
+        glRotatef(80.0, 1.0, 0.0, 0.0);
         gluCylinder(powerup, 1.0, 1.0, 3.0, 16, 3);
         glColor3f(1.0, 1.0, 1.0);
         glPopMatrix();
@@ -1618,6 +1622,11 @@ void myTimer(int value){
     if (dist < (1.0 + 3.6)) {
         powerupAchieved = true;
         attackMode = true;
+    }
+
+    powerupAngle += 12.0;
+    if (powerupAngle >= 360.0) {
+        powerupAngle = 0;
     }
     
     glutPostRedisplay();
