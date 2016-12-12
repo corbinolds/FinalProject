@@ -87,6 +87,9 @@ float camYDir;
 float camZDir;
 bool startOver = false; 
 
+bool sound1Playing = false;
+
+
 
 //ADDING LIGHTING 
 bool light1On = true;
@@ -282,7 +285,7 @@ void initializeOpenAL(int argc, char *argv[]) {
 	ALsizei size, freq;
 	ALenum 	format;
 	ALvoid 	*data;
-	ALboolean loop;
+	ALboolean loop = AL_FALSE;
 
 	/* TODO #01: Setup ALUT and OpenAL */
 	alutInit(&argc, argv);
@@ -298,9 +301,9 @@ void initializeOpenAL(int argc, char *argv[]) {
 
 	/* TODO #08: Create Our Stationary Sound */
 #ifdef __APPLE__
-	alutLoadWAVFile((ALbyte*) "wavs/siren.wav", &format, &data, &size, &freq);
+	alutLoadWAVFile((ALbyte*) "wavs/die.wav", &format, &data, &size, &freq);
 #else
-	alutLoadWAVFile((ALbyte*) "wavs/siren.wav", &format, &data, &size, &freq, &loop);
+	alutLoadWAVFile((ALbyte*) "wavs/die.wav", &format, &data, &size, &freq, &loop);
 #endif
 	alBufferData(buffers[0], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
@@ -314,27 +317,27 @@ void initializeOpenAL(int argc, char *argv[]) {
 	alutUnloadWAV(format, data, size, freq);
 
 #ifdef __APPLE__
-	alutLoadWAVFile((ALbyte*) "wavs/background.wav", &format, &data, &size, &freq);
+	alutLoadWAVFile((ALbyte*) "wavs/shot.wav", &format, &data, &size, &freq);
 #else
-	alutLoadWAVFile((ALbyte*) "wavs/background.wav", &format, &data, &size, &freq, &loop);
+	alutLoadWAVFile((ALbyte*) "wavs/shot.wav", &format, &data, &size, &freq, &loop);
 #endif
 	alBufferData(buffers[2], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
 
 	alSourcei(sources[0], AL_BUFFER, buffers[0]);
-	alSourcei(sources[0], AL_LOOPING, AL_TRUE);
+	alSourcei(sources[0], AL_LOOPING, AL_FALSE);
 
 	alSourcei(sources[1], AL_BUFFER, buffers[1]);
 	alSourcei(sources[1], AL_LOOPING, AL_TRUE);
 
 	alSourcei(sources[2], AL_BUFFER, buffers[2]);
-	alSourcei(sources[2], AL_LOOPING, AL_TRUE);
+	alSourcei(sources[2], AL_LOOPING, AL_FALSE);
 
 
 	/* TODO #10: Position our Stationary Source */
 	positionSource(sources[0], 0, 0, 0);
-	positionSource(sources[1],0, 0, 0);
+	positionSource(sources[1], 2, 0, 0);
 	positionSource(sources[2], 0, 0, 0);
 
 	PrintOpenALInfo();					// print our OpenAL versioning information
@@ -1238,6 +1241,7 @@ void shoot() {
             ballRadius );
     // printf("Shot xdir: %f ydir: %f", cos(carHeading*(M_PI/180))*50, -sin(carHeading*(M_PI/180))*50);
     firing = true;
+	alSourcePlay(sources[2]);
     shotStep = 0;
 }
 
@@ -1319,10 +1323,10 @@ void renderScene(void) {
 	camXDir = carZ - cameraXYZ.getZ();
 
 
-	positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
-		cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
-		0.0f, 1.0f, 0.0f);
-	//positionListener(0, 0, 0, 0, 0, 0, 0.0f, 1.0f, 0.0f);
+	//positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
+	////	cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
+	//	0.0f, 1.0f, 0.0f);
+	positionListener(0, 0, 0, 0, 0, 0, 0.0f, 1.0f, 0.0f);
 
 	//float lPosition[4] = { 0.0, 10.0, 0.0, 1.0 };
 	//glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
@@ -1394,7 +1398,7 @@ void renderScene(void) {
     if(carfreefall) {
         glRotatef(-freeFallAngle, 1.0, 0.0, 0.0);
     }
-	if(carY < -50)
+	if(carY < -80)
 	{
 		newGame(); 
 	}
@@ -1620,21 +1624,6 @@ void normalKeysDown(unsigned char key, int x, int y) {
     if(key == 32 && attackMode && !firing) {
         shoot();
     }
-	if (key == '1') {
-		alSourcePlay(sources[0]);
-		alSourcePlay(sources[1]);
-		alSourcePlay(sources[2]);
-
-
-		if (light1On) {
-			glDisable(GL_LIGHT0);
-			light1On = !light1On;
-		}
-		else {
-			glEnable(GL_LIGHT0);
-			light1On = !light1On;
-		}
-	}
 
 	if (easterEgg > 100)
 	{
@@ -1713,6 +1702,11 @@ void myTimer(int value){
         carfreefall = true;
     }
     if(carfreefall) {
+		if (!sound1Playing) {
+			alSourcePlay(sources[0]);
+			sound1Playing = true;
+		}
+
         carY -= .5;
         freeFallAngle += 12.0;
         if(fmod(freeFallAngle, 360.0) <= .1) {
@@ -1720,6 +1714,9 @@ void myTimer(int value){
         }
         gameState = DEAD;
     }
+	else {
+		sound1Playing = false;
+	}
     carX += cos(carHeading*(M_PI/180))*speed;
     carZ += -sin(carHeading*(M_PI/180))*speed;
     
@@ -2186,9 +2183,10 @@ int main(int argc, char **argv) {
 
     populateBalls();
 
-	positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
-		cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
-		0.0f, 1.0f, 0.0f);
+	//positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
+	//	cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
+	//	0.0f, 1.0f, 0.0f);
+	positionListener(0,0,0,0,0,0, 0.0f, 1.0f, 0.0f);
 
     //Create all of our snows 
 
@@ -2214,9 +2212,6 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
 	//atexit(cleanupOpenAL);                                    // we can pass multiple functions that get placed onto a call stack
-	
-	alSourcePlay(sources[1]);
-	alSourcePlay(sources[2]);
 
     gluDeleteQuadric(powerup);
     
