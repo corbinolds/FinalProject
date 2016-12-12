@@ -17,7 +17,7 @@ class ParticleSystem {
 		
 
 
-		void populateSnows(); 
+		void populateSnows(float num); 
 		void draw(); 
 		void update(); 
 	private:

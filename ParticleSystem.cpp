@@ -17,7 +17,7 @@
                           // the number of Snows in our scene
 
 ParticleSystem::ParticleSystem() {   
-	numSnows = 10;
+	numSnows = 50;
 	Snows.clear(); 
 }
 
@@ -25,9 +25,9 @@ ParticleSystem::ParticleSystem(int num) {
 	numSnows = num;
 }
 
-void ParticleSystem::populateSnows() {
+void ParticleSystem::populateSnows(float num) {
     //srand( time(NULL) );
-	float groundSize = 10;                      // the size of our ground plane and therefore bounding box
+	float groundSize = num;                      // the size of our ground plane and therefore bounding box
     float rangeX = groundSize*2;
     float rangeZ = groundSize*2;
 	float SnowRadius = 0.1;                     // the base radius of all our spheres (when created, the spheres will

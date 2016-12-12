@@ -130,6 +130,7 @@ bool powerupAchieved = false;
 bool firing = false;
 float moveLeg = 0;
 float rotateHand = 0;
+int easterEgg = 0;
 
 // GAME STATES
 const int BEFORE = 0;
@@ -697,23 +698,6 @@ void drawDress() {
 
 	}; glPopMatrix();
 	//END CHANGE 2PM
-
-    /*glPushMatrix();
-    glColor3f( .33,  .55,  .33);
-	if(health <= 50) 
-	{
-		glColor3f( 1,  0,  0); // Dress will change to red if she is hit. 
-	}
-	if(attackMode)
-    {
-     glColor3f( getRand(),  getRand(),  getRand() + 0.5);
-    }   
-    glTranslatef(0, 3.0, 0.0);
-    glRotated(-90, 1.0, 0.0, 0.0);
-    glScalef(1.0, 1.0, 2.0);
-    glutSolidCone(2.0, 2.0, 50.0, 50.0);
-    glPopMatrix();*/
-
 }
 
 
@@ -1306,6 +1290,7 @@ void renderScene(void) {
 //      GLUT keyboard callback for when a regular key is pressed.
 //
 void normalKeysDown(unsigned char key, int x, int y) {
+
     switch( key ) {
         case 'q':
         case 'Q':
@@ -1315,18 +1300,22 @@ void normalKeysDown(unsigned char key, int x, int y) {
     }
     if(key == 'w' && !carfreefall) {
         speed = .5;
+		easterEgg = 0; 
     }
     
     if(key == 's' && !carfreefall) {
         speed = -.5;
+		easterEgg = 0; 
     }
     
     if(key == 'd' && !carfreefall) {
         carHeading -= 22.5;
+		easterEgg += 1; 
     }
     
     if(key == 'a' && !carfreefall) {
         carHeading += 22.5;
+		easterEgg += 1;
     }
     if(key == 32 && attackMode && !firing) {
         shoot();
@@ -1340,6 +1329,12 @@ void normalKeysDown(unsigned char key, int x, int y) {
 			glEnable(GL_LIGHT0);
 			light1On = !light1On;
 		}
+	}
+
+	if (easterEgg > 100)
+	{
+		powerupAchieved = true; 
+		attackMode = true; 
 	}
 }
 
@@ -1359,8 +1354,8 @@ void myTimer(int value){
         part.Snows[i]->Fall(); 
     }
 
-        if (SnowsTimer >= 45) {
-        part.populateSnows(); 
+        if (SnowsTimer >= 90) {
+        part.populateSnows(groundSize); 
         SnowsTimer = 0;
         while (part.Snows.size() > 20)
         {
@@ -1369,8 +1364,8 @@ void myTimer(int value){
 
     }
 
-    if (SnowsTimerTwo >= 60) {
-        part.populateSnows();
+    if (SnowsTimerTwo >= 120) {
+        part.populateSnows(groundSize);
         SnowsTimerTwo = 0;
     }
     
@@ -1842,7 +1837,7 @@ int main(int argc, char **argv) {
 
     //Create all of our snows 
 
-    part.populateSnows();
+    part.populateSnows(groundSize);
 	
 	generateEnvironmentDL();            //Adding lighting
 
