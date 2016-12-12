@@ -1563,6 +1563,9 @@ void myTimer(int value){
                 printf("\nHit!\n");
                 delete balls[i];
                 balls.erase (balls.begin()+i);
+                firing = false;
+                shotStep = 0;
+                delete shot;
             }
         }
     }
@@ -1814,7 +1817,6 @@ void registerTextures() {
 }
 
 int readConfigFile(char** argv) {
-    printf("\nCommand line arg found, reading config file");
 
     char* controlFile = argv[1];
 
@@ -1899,6 +1901,7 @@ int main(int argc, char **argv) {
 	printf("[INFO]: Shader compilation complete\n");
 
     if(argc > 1) {
+        printf("\nCommand line arg found, reading config file");
         int result = readConfigFile(argv);
     }
 
