@@ -16,6 +16,9 @@ Corbin: Shader on dress/ Sound/Lighting/
 Vanessa: Lighting/Billboarding/Trees/Enemies/Skybox/Easter Egg 
 Nicholas: Base code/Shooting/Collison Detection/Powerup, shader/Flocking
 
+EASTER EGG: Spin by pressing the key a or d and leave it pressed for a while. You will get automatic power up without
+having to find the powerup. 
+
 
 How long did this assignment take you?
 15 hours 

@@ -913,7 +913,7 @@ void drawHead() {
 
     glPushMatrix();
    // glColor3f( 1, 0.894118, 0.768627);
-	if (health <= 50 && !attackMode) {
+	if (health <= 50) {
 		glUseProgram(shaderProgramHandle);
 
 		bool isRed = true;
