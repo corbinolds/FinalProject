@@ -9,9 +9,9 @@
  *
  *
  *  Authors:
+ *      Nicholas Zustak
  * 		Corbin Olds 
  *		Vanessa Ramos 
- *      Nicholas Zustak
  *
  *      Dr. Jeffrey Paone, Colorado School of Mines
  *
@@ -63,6 +63,7 @@ int SnowsTimer = 0;                         // this controls how often to call p
 int SnowsTimerTwo = 0; 
 int SnowsTimerThree = 0;
 int SnowsTimerFour = 0; 
+int numSprites = 10;
 GLuint snowTexture;
 ParticleSystem part;
 // Adding trees  
@@ -444,7 +445,6 @@ void initScene() {
     // fill up the treeSpritePositions with some meaningful information...
     srand( time(NULL) );
     forestCenter = Point(0, 0, 0);
-    int numSprites = 10;
     float rangeX = groundSize;
     float rangeZ = groundSize;
     for(int i = 0; i < numSprites; i++) {
@@ -1624,6 +1624,9 @@ void myTimer(int value){
                 printf("\nHit!\n");
                 delete balls[i];
                 balls.erase (balls.begin()+i);
+                firing = false;
+                shotStep = 0;
+                delete shot;
             }
         }
     }
@@ -1874,6 +1877,35 @@ void registerTextures() {
 
 }
 
+int readConfigFile(char** argv) {
+
+    char* controlFile = argv[1];
+
+    const char * file2open = (const char *)controlFile;
+    std::ifstream file2(controlFile);
+
+    if (!file2.is_open()) {
+        printf(file2open);
+        printf("\nFile could not be opened. Must be of type 'file.csv'\n");
+        printf("\nFile format is: \nNumTrees, NumEnemies, windowWidth, windowHeight");
+        printf("\nBe sure not to break the program with negative or other stupid values!");
+        return 0;
+    }
+
+    std::string value;
+    getline(file2, value, ',');
+    numSprites = atoi(value.c_str());
+
+    getline(file2, value, ',');
+    numBalls = atoi(value.c_str());
+
+    getline(file2, value, ',');
+    windowWidth = atoi(value.c_str());
+
+    getline(file2, value, ',');
+    windowHeight = atoi(value.c_str());
+}
+
 // main() //////////////////////////////////////////////////////////////////////
 //
 //  Program entry point. Does not process command line arguments.
@@ -1928,6 +1960,11 @@ int main(int argc, char **argv) {
 	// CHANGE 2PM
 	setUpShaders();
 	printf("[INFO]: Shader compilation complete\n");
+
+    if(argc > 1) {
+        printf("\nCommand line arg found, reading config file");
+        int result = readConfigFile(argv);
+    }
 
     populateBalls();
 
