@@ -88,6 +88,7 @@ float camZDir;
 bool startOver = false; 
 
 bool sound1Playing = false;
+bool sound2Playing = false;
 
 
 
@@ -309,9 +310,9 @@ void initializeOpenAL(int argc, char *argv[]) {
 	alutUnloadWAV(format, data, size, freq);
 
 #ifdef __APPLE__
-	alutLoadWAVFile((ALbyte*) "wavs/Running.wav", &format, &data, &size, &freq);
+	alutLoadWAVFile((ALbyte*) "wavs/tune.wav", &format, &data, &size, &freq);
 #else
-	alutLoadWAVFile((ALbyte*) "wavs/Running.wav", &format, &data, &size, &freq, &loop);
+	alutLoadWAVFile((ALbyte*) "wavs/tune.wav", &format, &data, &size, &freq, &loop);
 #endif
 	alBufferData(buffers[1], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
@@ -337,7 +338,7 @@ void initializeOpenAL(int argc, char *argv[]) {
 
 	/* TODO #10: Position our Stationary Source */
 	positionSource(sources[0], 0, 0, 0);
-	positionSource(sources[1], 2, 0, 0);
+	positionSource(sources[1], 0, 0, 0);
 	positionSource(sources[2], 0, 0, 0);
 
 	PrintOpenALInfo();					// print our OpenAL versioning information
@@ -1624,6 +1625,17 @@ void normalKeysDown(unsigned char key, int x, int y) {
     if(key == 32 && attackMode && !firing) {
         shoot();
     }
+
+	if (key == 'm') {
+		if (sound2Playing) {
+			alSourceStop(sources[1]);
+			sound2Playing = !sound2Playing;
+		}
+		else {
+			alSourcePlay(sources[1]);
+			sound2Playing = !sound2Playing;
+		}
+	}
 
 	if (easterEgg > 100)
 	{
