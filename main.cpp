@@ -623,9 +623,7 @@ void setUpShaders() {
 
 	uniformTimeLoc = glGetUniformLocation(shaderProgramHandle, "time");
 	uniformDressColorLoc = glGetUniformLocation(shaderProgramHandle, "dressColor");
-<<<<<<< HEAD
 	uniformFaceColorLoc = glGetUniformLocation(shaderProgramHandle, "FaceColor");
-=======
 
     string thirdFile = "shaders/powerup.v.glsl";
     string fourthFile = "shaders/powerup.f.glsl";
@@ -633,7 +631,6 @@ void setUpShaders() {
     shaderProgramHandle2 = createShaderProgram((char *)thirdFile.c_str(), (char *)fourthFile.c_str());
 
     uniformTimeLoc2 = glGetUniformLocation(shaderProgramHandle2, "time");
->>>>>>> 02fd82d33d71911ebbe635325dabd255343cbb55
 }
 //END OF CHANGE 2PM
 
@@ -1955,6 +1952,8 @@ int readConfigFile(char** argv) {
 
     getline(file2, value, ',');
     windowHeight = atoi(value.c_str());
+
+	return 1; 
 }
 
 // main() //////////////////////////////////////////////////////////////////////
