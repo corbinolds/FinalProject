@@ -1606,9 +1606,8 @@ void myTimer(int value){
             // erase the 6th element
             delete balls[i];
             balls.erase (balls.begin()+i);
-            if (!attackMode) {
-                health -= 50;
-            }
+			// you will always take a hit.
+            health -= 50;
         }
         if(firing) {
             double distShot = sqrt((balls[i]->location.getX() - shot->location.getX()) *
