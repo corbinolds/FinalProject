@@ -1,5 +1,5 @@
 ﻿Corbin Olds, Vanessa Ramos & Nicholas Zustak / vramosri@myamil.mines.edu, nzustak@mymail.mines.edu, coolds@mymail.mines.edu
-Smite / Guild Members
+Smite / BurntShake, Artemis, Crane
 Final Project / Final Project - Key to the Kingdom
 
 This final project makes use of shaders (Artemis's dress up and down movement), it also makes use of shaders in the power up.
@@ -22,10 +22,12 @@ having to find the powerup.
 Music: Press 'm' for music to play. When the hero dies there will be a sound that plays. Also there will be a pew sound when the hero shoots. 
 
 How long did this assignment take you?
-15 hours 
+15 hours (each)
+
+Vanessa submitted the entire code for this project.
 
 How much did the lab help you for this assignment? 1-10 (1 - did not help at all, 10 - this was exactly the same as the lab)
 The assignments were very helpful in making this final project. 
 7
 How fun was this assignment? 1-10 (1 - discontinue this assignment, 10 - I wish I had more time to make it even better)
-5
+3
