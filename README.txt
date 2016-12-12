@@ -1,5 +1,5 @@
 ﻿Corbin Olds, Vanessa Ramos & Nicholas Zustak / vramosri@myamil.mines.edu, nzustak@mymail.mines.edu, coolds@mymail.mines.edu
- / Guild Members
+Smite / Guild Members
 Final Project / Final Project - Key to the Kingdom
 
 This final project makes use of shaders (Artemis's dress up and down movement), it also makes use of shaders in the power up.
@@ -19,6 +19,7 @@ Nicholas: Base code/Shooting/Collison Detection/Powerup, shader/Flocking
 EASTER EGG: Spin by pressing the key a or d and leave it pressed for a while. You will get automatic power up without
 having to find the powerup. 
 
+Music: Press 'm' for music to play. When the hero dies there will be a sound that plays. Also there will be a pew sound when the hero shoots. 
 
 How long did this assignment take you?
 15 hours 
