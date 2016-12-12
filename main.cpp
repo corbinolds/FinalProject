@@ -355,10 +355,41 @@ void drawCity() {
 		{
 			if (getRand() < 0.1 && (x % 6 == 0) && (y % 6 == 0))
 			{
+				glEnable(GL_LIGHTING);
+				glEnable(GL_LIGHT6);
 
+				// Create light components.
+				GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+				GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+				GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+				GLfloat position[] = { 0.0f, 15.0f, 0.0f, 1.0f };
+
+				// Assign created components to GL_LIGHT0.
+				glLightfv(GL_LIGHT6, GL_AMBIENT, ambientLight);
+				glLightfv(GL_LIGHT6, GL_DIFFUSE, diffuseLight);
+				glLightfv(GL_LIGHT6, GL_SPECULAR, specularLight);
+				glLightfv(GL_LIGHT6, GL_POSITION, position);
+
+				glEnable(GL_LIGHT7);
+				GLfloat positionTwo[] = { 0.0f, 15.0f, 100.0f, 1.0f };
+				glLightfv(GL_LIGHT7, GL_AMBIENT, ambientLight);
+				glLightfv(GL_LIGHT7, GL_DIFFUSE, diffuseLight);
+				glLightfv(GL_LIGHT7, GL_SPECULAR, specularLight);
+				glLightfv(GL_LIGHT7, GL_POSITION, positionTwo);
+
+				glEnable(GL_LIGHT5);
+				GLfloat positionThree[] = { 100.0f, 15.0f, 0.0f, 1.0f };
+				glLightfv(GL_LIGHT5, GL_AMBIENT, ambientLight);
+				glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuseLight);
+				glLightfv(GL_LIGHT5, GL_SPECULAR, specularLight);
+				glLightfv(GL_LIGHT5, GL_POSITION, positionThree);
+
+
+	
 				height = getHeightRand();
 				glPushMatrix();
-				glColor3f(1.0, getRand(), getRand());
+				GLfloat materialColor[] = { getRand(), getRand(), getRand(), 1.0f };
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
 				glTranslatef(x, 2.0, y);
 				glScalef(1.0, 4.0, 1.0);
 				glutSolidCube(1.0);
@@ -366,7 +397,9 @@ void drawCity() {
 
 
 				glPushMatrix();
-				glColor3f(0.0, 1.0, 0.0);
+				//glColor3f(0.0, 1.0, 0.0);
+				GLfloat materialColorCone[] = {0.0, 1.0,  0.0, 1.0f };
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColorCone);
 				glTranslatef(x, 3.0, y);
 				glRotated(95, -1.0, 0.0, 0.0);
 				glScalef(1.0, 1.0, 3.0);
@@ -398,8 +431,8 @@ void initScene() {
     glEnable(GL_DEPTH_TEST);
     
     // tell OpenGL not to use the material system; just use whatever we pass with glColor()
-    glEnable( GL_COLOR_MATERIAL );
-    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    //glEnable( GL_COLOR_MATERIAL );
+   // glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     
     // tells OpenGL to not blend colors across triangles
     glShadeModel( GL_SMOOTH );
@@ -534,7 +567,7 @@ void drawSkyboxPanel( GLuint texHandle, Point point, Vector dim1, Vector dim2, V
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texHandle );
     glPushMatrix(); {
-        glColor4f(1,1,1,1);
+   //     glColor4f(1,1,1,1);
         glBegin( GL_QUADS ); {
             glTexCoord2f(0, 0);
             normal.glNormal();
@@ -601,7 +634,9 @@ void drawCar() {
     glPushMatrix();
     glScalef(.2, .2, .2);
     {
-    glColor3f(2.0/255, 2.0/255, 2.0/255);
+   // glColor3f(2.0/255, 2.0/255, 2.0/255);
+	GLfloat materialColorCar[] = { 2.0 / 255,2.0 / 255, 2.0 / 255, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColorCar);
     glPushMatrix();
     glTranslatef(-10, 5, 10);
     glRotatef(tires, 0, 0, 1.0);
@@ -644,10 +679,10 @@ void drawCar() {
     }
     if(attackMode) {
         glLineWidth(3.0f);  
-        glColor3f(float(120+pulse)/255.0, (120+pulse)/255.0, 1.0);
+       // glColor3f(float(120+pulse)/255.0, (120+pulse)/255.0, 1.0);
     }
     else {
-        glColor3f((255.0 - float(health)*2.55)/255.0, (float(health)*2.55)/255.0, 1.0); 
+       // glColor3f((255.0 - float(health)*2.55)/255.0, (float(health)*2.55)/255.0, 1.0); 
     }
     glDisable( GL_LIGHTING );
     glBegin(GL_LINE_LOOP);
@@ -670,7 +705,7 @@ void drawCar() {
     // draw car body
         
     glPushMatrix();
-    glColor3f(0, 110.0/255, 1.0);
+   // glColor3f(0, 110.0/255, 1.0);
     glTranslatef(0, 5, 0);
     glScalef(20, 5, 20);
     glutSolidCube(1.0);
@@ -678,7 +713,7 @@ void drawCar() {
         
     // draw engine sphere thing
     glPushMatrix();
-    glColor3f(0, 200/255, 1.0);
+   // glColor3f(0, 200/255, 1.0);
     glTranslatef(8.0, 5.0 + bob, 0);
     glutSolidSphere(3.5, 10.0, 10.0);
     glPopMatrix();
@@ -691,7 +726,7 @@ void drawCar() {
 void drawCones (){
 
     glPushMatrix();
-    glColor3f( 1.0,  1.34, 0.0);
+  //  glColor3f( 1.0,  1.34, 0.0);
     glTranslatef(2.5, 1.0, 1.0);
     glRotated(-270, 0.0, 1.0, 0.0);
     glScalef(0.25, 0.25, 0.1);
@@ -699,7 +734,7 @@ void drawCones (){
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f( 1.0,  1.34,  0.0);
+   // glColor3f( 1.0,  1.34,  0.0);
     glTranslatef(2.5, 1.0, -1.0);
     glRotated(-270, 0.0, 1.0, 0.0);
     glScalef(0.25, 0.25, 0.1);
@@ -707,7 +742,7 @@ void drawCones (){
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f( 1.0,  0.0,  0.0);
+ //   glColor3f( 1.0,  0.0,  0.0);
     glTranslatef(-0.5, 3.0, 0.0);
     glScalef(3.0, 1.5, 3.5);
     glutSolidCube(1.0);
@@ -718,7 +753,7 @@ void drawCones (){
 void drawHead() {
 
     glPushMatrix();
-    glColor3f( 1, 0.894118, 0.768627);
+   // glColor3f( 1, 0.894118, 0.768627);
     glTranslatef(0, 7.0, 0.0);
     glutSolidSphere(1.0, 50, 50);
     glPopMatrix();
@@ -730,6 +765,8 @@ void drawHead() {
 void drawDress() {
 
 	//CHANGE 2PM SHADER
+	GLfloat materialColor[] = { 0.541176, 0.168627,  0.886275, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
 	glPushMatrix(); {
 		if (health <= 50 && !attackMode) {
 			glUseProgram(shaderProgramHandle);
@@ -783,7 +820,9 @@ void drawHands()
 			glUniform1f(uniformDressColorLoc, isRed);
 		}
 		else {
-			glColor3f(0.541176, 0.168627, 0.886275);
+			GLfloat materialColor[] = { 0.541176, 0.168627,  0.886275, 1.0f };
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
+			//glColor3f(0.541176, 0.168627, 0.886275);
 		}
 		glPushMatrix();
 		glTranslatef(-.80, 5.0, -0.2);
@@ -829,7 +868,7 @@ void drawHands()
 void drawEars() {
 
     glPushMatrix();
-    glColor3f( 1, 0.894118, 0.768627);
+   // glColor3f( 1, 0.894118, 0.768627);
     glTranslatef(.5, 7.75, 0.0);
     glRotated(270, 1.0, 0.0, 0.0);
     glScalef(.25, .25, .40);
@@ -838,7 +877,7 @@ void drawEars() {
 
 
     glPushMatrix();
-    glColor3f( 1, 0.894118, 0.768627);
+  //  glColor3f( 1, 0.894118, 0.768627);
     glTranslatef(-0.5, 7.75, 0.0);
     glRotated(270, 1.0, 0.0, 0.0);
     glScalef(.25, .25, .40);
@@ -852,7 +891,7 @@ void drawEars() {
 void drawEyes() {
 
     glPushMatrix();
-    glColor3f(0,  0.0,  0);
+  //  glColor3f(0,  0.0,  0);
     glTranslatef(-0.45, 7.0, 1.0);
     glScalef(0.025, 0.05, 0.025);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
@@ -861,7 +900,7 @@ void drawEyes() {
 
 
     glPushMatrix();
-    glColor3f(0,  0.0,  0);
+   // glColor3f(0,  0.0,  0);
     glTranslatef(0, 7.0, 1.0);
     glScalef(0.025, 0.05, 0.025);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
@@ -874,14 +913,14 @@ void drawEyes() {
 void drawLegs() {
 
     glPushMatrix();
-    glColor3f(0.866667, 0.627451, 0.866667);
+  //  glColor3f(0.866667, 0.627451, 0.866667);
     glTranslatef(-.75, 2.0, 0.0 + moveLeg);
     glScalef(0.5, 2.0, 0.5);
     glutSolidCube(1.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.866667, 0.627451, 0.866667);
+ //   glColor3f(0.866667, 0.627451, 0.866667);
     glTranslatef(0.75, 2.0, 0.0 - moveLeg);
     glScalef(0.5, 2.0, 0.5);
     glutSolidCube(1.0);
@@ -902,7 +941,8 @@ void drawLegs() {
 void drawName(char scrtext[]) {
 
     glPushMatrix();
-    glColor3f(1, 1, 1);
+	GLfloat materialColor[] = { 1.0,1.0, 1.0, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glTranslatef(0, 5, 0);
     glRotatef(90, 0.0,1.0,0.0);
     glScalef(.005,.005,.1);
@@ -936,42 +976,43 @@ void drawArtemis()
 
 {
     glPushMatrix();
-    glColor3f( 1.0,  0.0,  0.0);
-    glColor3f(getRand(), getRand(), getRand() + 0.5);
+  //  glColor3f( 1.0,  0.0,  0.0);
+  //  glColor3f(getRand(), getRand(), getRand() + 0.5);
     glTranslatef(0.0, 1.0, 0.0);
     glScalef(5.0, 2.0, 4.0);
     glutSolidCube(1.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.833,  0.0,  0.34);
+	GLfloat materialColor[] = { 0.833,  0.0,  0.34, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glScalef(0.3, 0.3, 0.3);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.833,  0.0,  0.34);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glTranslatef(-3.0, 1.0, 2.0);
     glScalef(0.3, 0.3, 0.3);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.833,  0.0,  0.34);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glTranslatef(3.0, 1.0, 2.0);
     glScalef(0.3, 0.3, 0.3);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.833,  0.0,  0.34);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glTranslatef(3.0, 1.0, -2.0);
     glScalef(0.3, 0.3, 0.3);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.833,  0.0,  0.34);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glTranslatef(-3.0, 1.0, -2.0);
     glScalef(0.3, 0.3, 0.3);
     glutSolidTorus(2.0, 2.0, 50.0, 50.0);
@@ -1105,7 +1146,8 @@ void renderScene(void) {
     
     // draw our ground
     glPushMatrix(); {
-        glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+		GLfloat materialColor[] = { 1.0,  1.0,  1.0, 1.0f };
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
         float squareSize = groundSize + ballRadius;
         glEnable( GL_TEXTURE_2D );
         glBindTexture( GL_TEXTURE_2D, groundTexHandle );
@@ -1159,6 +1201,8 @@ void renderScene(void) {
 		printf("THIS IS CALLED");
 		newGame(); 
 	}
+	GLfloat materialForEnemies[] = { 1,	0.829,	0.829 , 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialForEnemies);
     drawHuman();
     glPopMatrix();
 
@@ -1168,7 +1212,9 @@ void renderScene(void) {
     
     // enable textures.
     glEnable( GL_TEXTURE_2D );
-    glColor4f(1,1,1,1);
+   // glColor4f(1,1,1,1);
+	GLfloat materialColor[] = { 1.0,  1.0,  1.0, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     glBindTexture(GL_TEXTURE_2D, brickTexHandle);   // make all of our spheres bricky
 
     //Trees 
@@ -1176,7 +1222,8 @@ void renderScene(void) {
     // enable textures
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, treeTexHandle );  // from here on out we draw trees so only bind this once to save context switching in OpenGL
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    //glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
     
     // TODO #4: Sort trees by distance to camera
     XZCamera = Vector(cameraXYZ.getX()+forestCenter.getX(), 0.0, cameraXYZ.getZ()+forestCenter.getZ());
@@ -1214,13 +1261,22 @@ void renderScene(void) {
     glDisable( GL_TEXTURE_2D );
 
 
+
     // draw every sphere
     for( unsigned int i = 0; i < balls.size(); i++ ) {
-        balls[i]->draw();
+
+		glPushMatrix(); {
+			GLfloat materialColor[] = { 0.541176, 0.168627,  0.886275, 1.0f };
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColor);
+			balls[i]->draw();			
+		}; glPopMatrix();
+
         if(firing) {
-            shot->draw();
+            shot->drawShot();
         }
     }
+	
+	glEnable(GL_TEXTURE_2D);
 
     // DRAW POWERUP
     if(!powerupAchieved) {
@@ -1236,15 +1292,18 @@ void renderScene(void) {
 		glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
 
         glPushMatrix();
-        glColor3f(1.0, (204.0/255.0), 0.0);
+      //  glColor3f(1.0, (204.0/255.0), 0.0);
+		GLfloat materialColorPower[] = { 1.0, (204.0 / 255.0),  0.0, 1.0f };
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColorPower);
         glTranslatef(powerX, 1.0 + bob, powerZ);
         glRotatef(90.0, 1.0, 0.0, 0.0);
         gluCylinder(powerup, 1.0, 1.0, 3.0, 16, 3);
-        glColor3f(1.0, 1.0, 1.0);
+       // glColor3f(1.0, 1.0, 1.0);
         glPopMatrix();
 
 		//glDisable(GL_LIGHTING);
     } 
+	glDisable(GL_TEXTURE_2D);
 
 
      // DRAW GAME STATE
@@ -1257,7 +1316,7 @@ void renderScene(void) {
     glLoadIdentity();
     glClear(GL_DEPTH_BUFFER_BIT);
     
-    glColor3f( 1.0, 1.0, 1.0 );
+   // glColor3f( 1.0, 1.0, 1.0 );
     glRasterPos2i(10, 20);
     
     // PUT GAME STATE HERE /////////////////
@@ -1308,7 +1367,9 @@ void renderScene(void) {
 
         // enable texture for snow
     //glEnable( GL_TEXTURE_2D );
-    glColor3f(1.0,1.0,1.0);
+  //  glColor3f(1.0,1.0,1.0);
+	GLfloat materialColorPowerParticles[] = { 1.0, 1.0,  0.0, 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialColorPowerParticles);
     glBindTexture(GL_TEXTURE_2D, snowTexture);   // make all of our spheres bricky
     part.draw();
 

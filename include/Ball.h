@@ -17,6 +17,7 @@ public:
     Vector direction;
     
     void draw();
+	void drawShot();
     void moveForward(Point target);
     void moveBackward();
     
