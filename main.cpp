@@ -157,6 +157,15 @@ void computeArcballPosition(float theta, float phi, float radius,
     xyz.setZ( radius * -cosf(theta)*sinf(phi) );
 }
 
+float getRand() {
+	return rand() / (float)RAND_MAX;
+}
+
+float getHeightRand() {
+	return rand() % 50 + 1;
+}
+
+
 // Added for trees 
 
 bool registerTransparentOpenGLTexture(unsigned char *imageData, unsigned char *imageMask, int texWidth, int texHeight, GLuint &texHandle) {
@@ -325,6 +334,56 @@ void mouseMotion(int x, int y) {
     mouseY = y;
 }
 
+// drawTrees() //////////////////////////////////////////////////////////////////
+//
+//  Function to draw a random city using GLUT 3D Primitives
+//
+////////////////////////////////////////////////////////////////////////////////
+void drawCity() {
+	// TODO #4: Randomly place buildings of varying heights with random colors
+	float color = 0.0;
+	float height = 0.0;
+
+	// glPushMatrix();
+	glBegin(GL_LINES);
+	height = getHeightRand();
+
+	for (int x = -50; x < 50; x++)
+	{
+
+		for (int y = -50; y < 50; y++)
+		{
+			if (getRand() < 0.1 && (x % 6 == 0) && (y % 6 == 0))
+			{
+
+				height = getHeightRand();
+				glPushMatrix();
+				glColor3f(1.0, getRand(), getRand());
+				glTranslatef(x, 2.0, y);
+				glScalef(1.0, 4.0, 1.0);
+				glutSolidCube(1.0);
+				glPopMatrix();
+
+
+				glPushMatrix();
+				glColor3f(0.0, 1.0, 0.0);
+				glTranslatef(x, 3.0, y);
+				glRotated(95, -1.0, 0.0, 0.0);
+				glScalef(1.0, 1.0, 3.0);
+				glutSolidCone(2.0, 2.0, 50.0, 50.0);
+				glPopMatrix();
+			}
+			//  glColor3f(color*1.0, color*1.0, color*1.0);
+
+		}
+
+
+	}
+	glEnd();
+	// glPopMatrix();
+
+}
+
 
 
 //
@@ -362,11 +421,14 @@ void initScene() {
         treeSpritePositions.push_back(Point(x, 0.0, z));
         printf("\nNumber of sprites in vector: %d", treeSpritePositions.size());
     }
+	drawCity();
     
     // and enable alpha blending once and for all.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
+
+
 
 
 //
@@ -447,7 +509,8 @@ void populateBalls() {
                                            0.0f,                                                        // Y
                                            (rangeZ * (i/(float)numBalls)) - rangeZ/2.0f),               // Z
                                     Vector( rand()/(float)RAND_MAX, 0.0, rand()/(float)RAND_MAX ),  // with a random direction
-                                    ballRadius ) );                                                 // and a constant radius
+                                    ballRadius ) );         
+		// and a constant radius
     }
 }
 
@@ -623,10 +686,6 @@ void drawCar() {
     }
     glPopMatrix();
     
-}
-
-float getRand() {
-    return rand() / (float)RAND_MAX;
 }
 
 void drawCones (){
@@ -1011,6 +1070,8 @@ void generateEnvironmentDL() {
 	float lPosition5[5] = {0, 15, 0, 1.0 };
 	glLightfv(GL_LIGHT5, GL_POSITION, lPosition5);
 
+	drawCity(); 
+
     glEndList();
 }
 
@@ -1100,6 +1161,8 @@ void renderScene(void) {
 	}
     drawHuman();
     glPopMatrix();
+
+
 
 	
     
