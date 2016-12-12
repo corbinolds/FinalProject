@@ -25,9 +25,17 @@
 #include <GL/glew.h>
 
 #ifdef __APPLE__
+	#include <ALUT/alut.h>  // OpenAL Headers
+	#include <OpenAL/al.h>
+	#include <OpenAL/alc.h>
+
     #include <GLUT/glut.h>
 #else
-    #include <GL/glut.h>
+	#include <AL/alut.h>    // OpenAL Headers
+	#include <AL/al.h>
+	#include <AL/alc.h>
+    
+	#include <GL/glut.h>
 #endif
 
 #include <SOIL/soil.h>
@@ -73,7 +81,10 @@ vector< Point > treeSpritePositions;
 Vector view = Vector(0.0, 0.0, 0.0);
 Vector XZCamera;
 Vector XZView;
-Vector viewV; 
+Vector viewV;
+float camXDir;
+float camYDir;
+float camZDir;
 bool startOver = false; 
 
 
@@ -85,6 +96,15 @@ GLuint environmentDL;
 GLuint shaderProgramHandle = 0;
 GLuint uniformTimeLoc = 0;
 GLuint uniformDressColorLoc = 0;
+
+// Globals for OpenAL ---------------------------------------------
+#define NUM_BUFFERS 3
+#define NUM_SOURCES 3
+
+ALCdevice *device;
+ALCcontext *context;
+ALuint buffers[NUM_BUFFERS];
+ALuint sources[NUM_SOURCES];
 
 
 // GLOBAL VARIABLES ////////////////////////////////////////////////////////////
@@ -221,6 +241,130 @@ bool registerTransparentOpenGLTexture(unsigned char *imageData, unsigned char *i
     return true;
 }
 
+// PrintOpenALInfo() ////////////////////////////////////////////////////////////
+//
+//  Print the OpenAL version and attribute info to the screen
+//
+////////////////////////////////////////////////////////////////////////////////
+void PrintOpenALInfo() {
+	fprintf(stdout, "[INFO]: /--------------------------------------------------------\\\n");
+	fprintf(stdout, "[INFO]: | OpenAL Information                                     |\n");
+	fprintf(stdout, "[INFO]: |--------------------------------------------------------|\n");
+	fprintf(stdout, "[INFO]: |   OpenAL Version:  %35s |\n", alGetString(AL_VERSION));
+	fprintf(stdout, "[INFO]: |   OpenAL Renderer: %35s |\n", alGetString(AL_RENDERER));
+	fprintf(stdout, "[INFO]: |   OpenAL Vendor:   %35s |\n", alGetString(AL_VENDOR));
+	fprintf(stdout, "[INFO]: \\--------------------------------------------------------/\n\n");
+}
+
+// positionSource() ////////////////////////////////////////////////////////////
+//
+// This function updates the sources's position.  The position
+//  is set through the approriate OpenAL calls.
+//
+////////////////////////////////////////////////////////////////////////////////
+void positionSource(ALuint src, float posX, float posY, float posZ) {
+	/* TODO #09: Position a Source */
+	ALfloat srcPosition[] = { posX, posY, posZ };
+	alSourcefv(src, AL_POSITION, srcPosition);
+}
+
+
+// initializeOpenAL() //////////////////////////////////////////////////////////
+//
+//  Do all of our one time OpenAL & ALUT setup
+//
+//////////////////////////////////////////////////////////////////////////////////
+void initializeOpenAL(int argc, char *argv[]) {
+	ALsizei size, freq;
+	ALenum 	format;
+	ALvoid 	*data;
+	ALboolean loop;
+
+	/* TODO #01: Setup ALUT and OpenAL */
+	alutInit(&argc, argv);
+	alGetError();
+
+	ALCdevice *device = alcOpenDevice(NULL); // open default
+	ALCcontext *context = alcCreateContext(device, NULL);
+	alcMakeContextCurrent(context);
+
+	/* TODO #06: Generate Buffers & Sources */
+	alGenBuffers(NUM_BUFFERS, buffers);
+	alGenSources(NUM_SOURCES, sources);
+
+	/* TODO #08: Create Our Stationary Sound */
+#ifdef __APPLE__
+	alutLoadWAVFile((ALbyte*) "wavs/siren.wav", &format, &data, &size, &freq);
+#else
+	alutLoadWAVFile((ALbyte*) "wavs/siren.wav", &format, &data, &size, &freq, &loop);
+#endif
+	alBufferData(buffers[0], format, data, size, freq);
+	alutUnloadWAV(format, data, size, freq);
+
+#ifdef __APPLE__
+	alutLoadWAVFile((ALbyte*) "wavs/Running.wav", &format, &data, &size, &freq);
+#else
+	alutLoadWAVFile((ALbyte*) "wavs/Running.wav", &format, &data, &size, &freq, &loop);
+#endif
+	alBufferData(buffers[1], format, data, size, freq);
+	alutUnloadWAV(format, data, size, freq);
+
+#ifdef __APPLE__
+	alutLoadWAVFile((ALbyte*) "wavs/background.wav", &format, &data, &size, &freq);
+#else
+	alutLoadWAVFile((ALbyte*) "wavs/background.wav", &format, &data, &size, &freq, &loop);
+#endif
+	alBufferData(buffers[2], format, data, size, freq);
+	alutUnloadWAV(format, data, size, freq);
+
+
+	alSourcei(sources[0], AL_BUFFER, buffers[0]);
+	alSourcei(sources[0], AL_LOOPING, AL_TRUE);
+
+	alSourcei(sources[1], AL_BUFFER, buffers[1]);
+	alSourcei(sources[1], AL_LOOPING, AL_TRUE);
+
+	alSourcei(sources[2], AL_BUFFER, buffers[2]);
+	alSourcei(sources[2], AL_LOOPING, AL_TRUE);
+
+
+	/* TODO #10: Position our Stationary Source */
+	positionSource(sources[0], 0, 0, 0);
+	positionSource(sources[1],0, 0, 0);
+	positionSource(sources[2], 0, 0, 0);
+
+	PrintOpenALInfo();					// print our OpenAL versioning information
+}
+
+// cleanupOpenAL() /////////////////////////////////////////////////////////////
+//
+//  At exit, clean up all of our OpenAL objects
+//
+////////////////////////////////////////////////////////////////////////////////
+void cleanupOpenAL() {
+	/* TODO #03: Cleanup OpenAL & ALUT */
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(context);
+	alcCloseDevice(device);
+
+	alutExit();
+
+	/* TODO #07: Delete our Buffers and Sources */
+	alDeleteBuffers(NUM_BUFFERS, buffers);
+	alDeleteSources(NUM_SOURCES, sources);
+}
+
+void positionListener(float posX, float posY, float posZ,
+	float dirX, float dirY, float dirZ,
+	float upX = 0, float upY = 1, float upZ = 0) {
+	/* TODO #04: Position Our Listener */
+
+	ALfloat listenerPosition[] = { posX, posY, posZ };
+	ALfloat listenerOrientation[] = { dirX, dirY, dirZ, upX, upY, upZ };
+
+	alListenerfv(AL_POSITION, listenerPosition);
+	alListenerfv(AL_ORIENTATION, listenerOrientation);
+}
 
 
 //
@@ -661,11 +805,13 @@ void drawCar() {
         glVertex3f(x, 0.0, z);
 
     }
-   glEnable( GL_LIGHTING );
 
 
     glEnd();
     glPopMatrix();
+
+	glEnable(GL_LIGHTING);
+
     
     // draw car body
         
@@ -685,7 +831,7 @@ void drawCar() {
         
     }
     glPopMatrix();
-    
+	glDisable(GL_LIGHTING);
 }
 
 void drawCones (){
@@ -1091,6 +1237,16 @@ void renderScene(void) {
     Point carPt = Point(carX, carY, carZ);
     gluLookAt( cameraXYZ + carPt, carPt, Vector(0,1,0) );    // Hey! I rewrote the gluLookAt() to take gluLookAt( Point, Point, Vector )
     
+	camXDir = carX - cameraXYZ.getX();
+	camYDir = carY - cameraXYZ.getY();
+	camXDir = carZ - cameraXYZ.getZ();
+
+
+	positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
+		cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
+		0.0f, 1.0f, 0.0f);
+	//positionListener(0, 0, 0, 0, 0, 0, 0.0f, 1.0f, 0.0f);
+
 	//float lPosition[4] = { 0.0, 10.0, 0.0, 1.0 };
 	//glLightfv(GL_LIGHT0, GL_POSITION, lPosition);
 
@@ -1103,6 +1259,10 @@ void renderScene(void) {
 	// Lighting
     glCallList( environmentDL );
     
+
+
+
+
     // draw our ground
     glPushMatrix(); {
         glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -1356,6 +1516,11 @@ void normalKeysDown(unsigned char key, int x, int y) {
         shoot();
     }
 	if (key == '1') {
+		alSourcePlay(sources[0]);
+		alSourcePlay(sources[1]);
+		alSourcePlay(sources[2]);
+
+
 		if (light1On) {
 			glDisable(GL_LIGHT0);
 			light1On = !light1On;
@@ -1853,6 +2018,7 @@ int readConfigFile(char** argv) {
 int main(int argc, char **argv) {
     //create a double-buffered GLUT window at (50,50) with predefined windowsize
     glutInit(&argc, argv);
+
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(50,50);
     glutInitWindowSize(windowWidth,windowHeight);
@@ -1864,6 +2030,8 @@ int main(int argc, char **argv) {
 		printf("[ERROR]: Error initalizing GLEW\n");
 		return 0;
 	}
+
+	initializeOpenAL(argc, argv);     // do all of our setup for OpenAL
     
     printf( "[INFO]: GLUT initialized and OpenGL Context created\n" );
     
@@ -1907,6 +2075,10 @@ int main(int argc, char **argv) {
 
     populateBalls();
 
+	positionListener(cameraXYZ.getX() + camXDir*cameraRadius, cameraXYZ.getY() + camYDir*cameraRadius, cameraXYZ.getZ() + camZDir*cameraRadius,
+		cameraXYZ.getX() + camXDir, cameraXYZ.getY() + camYDir, cameraXYZ.getZ() + camZDir,
+		0.0f, 1.0f, 0.0f);
+
     //Create all of our snows 
 
     part.populateSnows(groundSize);
@@ -1929,6 +2101,11 @@ int main(int argc, char **argv) {
     
     //and enter the GLUT loop, never to exit.
     glutMainLoop();
+
+	//atexit(cleanupOpenAL);                                    // we can pass multiple functions that get placed onto a call stack
+	
+	alSourcePlay(sources[1]);
+	alSourcePlay(sources[2]);
 
     gluDeleteQuadric(powerup);
     
