@@ -85,6 +85,7 @@ GLuint environmentDL;
 GLuint shaderProgramHandle = 0;
 GLuint uniformTimeLoc = 0;
 GLuint uniformDressColorLoc = 0;
+GLuint uniformFaceColorLoc = 0;
 
 
 // GLOBAL VARIABLES ////////////////////////////////////////////////////////////
@@ -103,10 +104,10 @@ GLuint skyboxHandles[6];                    // all of our skybox handles
 vector< Ball* > balls;                      // a collection of the balls in our scene
 
 // some parameters to control the running of our program
-float groundSize = 50;                      // the size of our ground plane and therefore bounding box
+float groundSize = 100;                      // the size of our ground plane and therefore bounding box
 float ballRadius = 0.5;                     // the base radius of all our spheres (when created, the spheres will
                                                 // have an actual radius of ballRadius +/- rand()
-int numBalls = 5;                          // the number of balls in our scene
+int numBalls = 10;                          // the number of balls in our scene
 
 GLUquadric* powerup;
 Ball* shot;
@@ -341,6 +342,36 @@ void mouseMotion(int x, int y) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 void drawCity() {
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT6);
+
+	// Create light components.
+	GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat position[] = { 0.0f, 15.0f, 0.0f, 1.0f };
+
+	// Assign created components to GL_LIGHT0.
+	glLightfv(GL_LIGHT6, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT6, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT6, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT6, GL_POSITION, position);
+
+	glEnable(GL_LIGHT7);
+	GLfloat positionTwo[] = { 0.0f, 50.0f, 100.0f, 1.0f };
+	glLightfv(GL_LIGHT7, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT7, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT7, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT7, GL_POSITION, positionTwo);
+
+	glEnable(GL_LIGHT5);
+	GLfloat positionThree[] = { 100.0f, 50.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT5, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT5, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT5, GL_POSITION, positionThree);
+
 	// TODO #4: Randomly place buildings of varying heights with random colors
 	float color = 0.0;
 	float height = 0.0;
@@ -349,42 +380,13 @@ void drawCity() {
 	glBegin(GL_LINES);
 	height = getHeightRand();
 
-	for (int x = -50; x < 50; x++)
+	for (int x = -100; x < 100; x++)
 	{
 
-		for (int y = -50; y < 50; y++)
+		for (int y = -100; y < 100; y++)
 		{
 			if (getRand() < 0.1 && (x % 6 == 0) && (y % 6 == 0))
 			{
-				glEnable(GL_LIGHTING);
-				glEnable(GL_LIGHT6);
-
-				// Create light components.
-				GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-				GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-				GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-				GLfloat position[] = { 0.0f, 15.0f, 0.0f, 1.0f };
-
-				// Assign created components to GL_LIGHT0.
-				glLightfv(GL_LIGHT6, GL_AMBIENT, ambientLight);
-				glLightfv(GL_LIGHT6, GL_DIFFUSE, diffuseLight);
-				glLightfv(GL_LIGHT6, GL_SPECULAR, specularLight);
-				glLightfv(GL_LIGHT6, GL_POSITION, position);
-
-				glEnable(GL_LIGHT7);
-				GLfloat positionTwo[] = { 0.0f, 15.0f, 100.0f, 1.0f };
-				glLightfv(GL_LIGHT7, GL_AMBIENT, ambientLight);
-				glLightfv(GL_LIGHT7, GL_DIFFUSE, diffuseLight);
-				glLightfv(GL_LIGHT7, GL_SPECULAR, specularLight);
-				glLightfv(GL_LIGHT7, GL_POSITION, positionTwo);
-
-				glEnable(GL_LIGHT5);
-				GLfloat positionThree[] = { 100.0f, 15.0f, 0.0f, 1.0f };
-				glLightfv(GL_LIGHT5, GL_AMBIENT, ambientLight);
-				glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuseLight);
-				glLightfv(GL_LIGHT5, GL_SPECULAR, specularLight);
-				glLightfv(GL_LIGHT5, GL_POSITION, positionThree);
-
 
 	
 				height = getHeightRand();
@@ -618,6 +620,7 @@ void setUpShaders() {
 
 	uniformTimeLoc = glGetUniformLocation(shaderProgramHandle, "time");
 	uniformDressColorLoc = glGetUniformLocation(shaderProgramHandle, "dressColor");
+	uniformFaceColorLoc = glGetUniformLocation(shaderProgramHandle, "FaceColor");
 }
 //END OF CHANGE 2PM
 
@@ -754,6 +757,24 @@ void drawHead() {
 
     glPushMatrix();
    // glColor3f( 1, 0.894118, 0.768627);
+	if (health <= 50 && !attackMode) {
+		glUseProgram(shaderProgramHandle);
+
+		bool isRed = true;
+		glUniform1f(uniformDressColorLoc, isRed);
+		glUniform1f(uniformFaceColorLoc, isRed);
+	}
+	if (attackMode) {
+		glUseProgram(shaderProgramHandle);
+
+
+		float currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+		glUniform1f(uniformTimeLoc, currentTime);
+
+		bool isRed = false;
+		glUniform1f(uniformDressColorLoc, isRed);
+		glUniform1f(uniformFaceColorLoc, isRed);
+	}
     glTranslatef(0, 7.0, 0.0);
     glutSolidSphere(1.0, 50, 50);
     glPopMatrix();
@@ -773,6 +794,7 @@ void drawDress() {
 
 			bool isRed = true;
 			glUniform1f(uniformDressColorLoc, isRed);
+			glUniform1f(uniformFaceColorLoc, isRed);
 		}
 		if (attackMode) {
 			glUseProgram(shaderProgramHandle);
@@ -783,6 +805,7 @@ void drawDress() {
 
 			bool isRed = false;
 			glUniform1f(uniformDressColorLoc, isRed);
+			glUniform1f(uniformFaceColorLoc, isRed);
 		}
 
 		glTranslatef(0, 3.0, 0.0);
@@ -808,6 +831,7 @@ void drawHands()
 
 			bool isRed = true;
 			glUniform1f(uniformDressColorLoc, isRed);
+			glUniform1f(uniformFaceColorLoc, isRed);
 		}
 		else if (attackMode) {
 			glUseProgram(shaderProgramHandle);
@@ -818,6 +842,7 @@ void drawHands()
 
 			bool isRed = false;
 			glUniform1f(uniformDressColorLoc, isRed);
+			glUniform1f(uniformFaceColorLoc, isRed);
 		}
 		else {
 			GLfloat materialColor[] = { 0.541176, 0.168627,  0.886275, 1.0f };
@@ -1028,6 +1053,7 @@ void drawArtemis()
 
 void newGame() 
 {
+	easterEgg = 0; 
 	balls.clear(); 
 	populateBalls(); 
 	gameState = BEFORE; 
@@ -1198,7 +1224,6 @@ void renderScene(void) {
     }
 	if(carY < -50)
 	{
-		printf("THIS IS CALLED");
 		newGame(); 
 	}
 	GLfloat materialForEnemies[] = { 1,	0.829,	0.829 , 1.0f };
@@ -1276,7 +1301,7 @@ void renderScene(void) {
         }
     }
 	
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 
     // DRAW POWERUP
     if(!powerupAchieved) {
